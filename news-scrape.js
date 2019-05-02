@@ -7,11 +7,14 @@ var axios = require("axios");
 // var express= require();
 // var rp = require('request-promise');
 // var router = express.Router();
-var databaseUrl = "news_scraper";
+var databaseUrl = process.env.MONGODB_URI || "news_scraper";
 var collections = ["news"];
-var app = express();
 
+var PORT = process.env.PORT || 3000;
+var app = express();
+app.set('view engine', 'ejs');
 var db = mongojs(databaseUrl, collections);
+
 db.on("error", function (error) {
     console.log("Database Error:", error);
 });
@@ -35,35 +38,73 @@ app.get("/all", function (req, res) {
     });
 });
 
-app.get("/scrape", function (req, res) {
+var results=[];
+app.get("/pig", function (req, res) {
     // Make a request via axios for the news section of `ycombinator`
     axios.get("https://www.nytimes.com/section/us").then(function (response) {
         // Load the html body from axios into cheerio
         var $ = cheerio.load(response.data);
         //   console.log(response.data)
         // For each element with a "title" class
+
+      
+
         $("#stream-panel li").each(function (i, element) {
             // Save the text and href of each link enclosed in the current element
         //    console.log($(element).html())
             var headline = $(element).find("h2").text();
             var summary = $(element).find("p").text();
             var link = $(element).find("a").attr("href");
-
-            db.news.find({}),function (error,found){
-                if (found.length=0){
-
-                }
-            }
-
-            console.log(headline,summary,'https://www.nytimes.com'+link) 
-        });
+            
+           results.push({
+               headline:headline,
+               summary:summary,
+               link:"www.nytimes.com"+ link
+            })
+  
+        })
+            res.json(results)
+            console.log(results)
+      
     });
 
-    res.send("Scrape Complete");
+    
 });
 
 
-// put articles on to the page. 
+app.post('/insert_news',function(req,res){
+    db.news.insert({headline: req.body.headline, summary:req.body.summary}),function(rror, addNews){
+        res.json(addNews)
+    }
+})
+
+
+app.get('/ejs', function (req, res) {
+    db.news.find({}, function (error, news) {
+        if (error)
+            console.log(error)
+        else res.render('pages/schedule',results)
+    })
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // put articles on to the page. 
 app.post('/articles', function (req, res) {
 	db.news.insert({headlines: req.body.headlines, summary: req.body.summary, link: req.body.link},function(error, savedArticles) {
         // Log any errors
@@ -71,24 +112,24 @@ app.post('/articles', function (req, res) {
           console.log(error);
         }else {
           //the reason why we are sending the savedSong back is because we now have an _id to give to the client
-          res.json(savedSong);
+          res.json(savedArticles);
         }
       });
     });
 
 
-app.delete("/comments/:id",function(req,res){
-    var id= req.params.id
+// app.delete("/comments/:id",function(req,res){
+//     var id= req.params.id
 
-    db
-})
+//     db
+// })
 
 
 
 
 // Listen on port 3000
-app.listen(3000, function () {
-    console.log("App running on port 3000!");
+app.listen(PORT,function(){
+    console.log('🌎 ==> Now listening on PORT %s! Visit http://localhost:%s in your browser!', PORT, PORT);
 });
 
 
