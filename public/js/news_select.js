@@ -60,30 +60,38 @@
 
 
 function getNews(){
-	$('div').empty();
 	
 	$.ajax({
 		method: 'GET',
 		url: '/pig'
 	}).then(function(pig){
+		debugger;
 		for (var pIndex in pig){
+	console.log(pIndex)
 			var $p = $('<p>');
 			$p.text(`headline: ${pig[pIndex].headline} - summary: ${pig[pIndex].summary} - link: ${pig[pIndex].link}`);
 
-			var bt = $('<button>')
-			bt.attr('class', 'scrape');
+			
 
-			bt.text('scrape'); 
+			var input =$("<input>")
+			input.attr('type','text')
+
+
+			var bt = $('<button>')
+			bt.attr('class', 'save');
+						bt.text('Save');
+
+			input.append(bt)
 			// bt.attr('data-id', frogs[fIndex]._id)
 
-			$p.append(bt)
+			$p.append(input)
 
-			$('div').append($p);
+			$('#news_table').append($p);
 
 		}
 	})
 }
-getNews();
+// getNews();
 
 // 	$(document).on('click','.scrape',function(){
 		
