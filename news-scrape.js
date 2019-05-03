@@ -32,14 +32,17 @@ app.get("/", function (req, res) {
 // creat a public static file and loop over it with an ajax call yo view the JSON 
 app.get("/all", function (req, res) {
     // Find all results from the news collection in the db
-    db.news.find({}, function (error, found) {
+    db.info.find({}, function (error, results) {
         // Throw any errors to the console
         if (error) {
             console.log(error);
         }
         // If there are no errors, send the data to the browser as json
         else {
-            res.json(found);
+       
+            res.render('pages/news', {
+                results: results
+            })
         }
     });
 });
@@ -94,7 +97,7 @@ app.post('/api/comment/:id', function (req, res) {
     
     console.log(req.params.id)
     console.log(req.body.comment)
-    res.redirect('/pig')
+    res.redirect('/all')
 
 
 
@@ -103,12 +106,12 @@ app.post('/api/comment/:id', function (req, res) {
 
 app.delete('api/comment/:id',function (req, res){
     db.info.remove({
-        "_id": mongojs.ObjectID(id)
+        "_id": mongojs.ObjectID(req.body.id)
       }, function(error, removed) {
         if (error) {
           res.send(error);
         }else {
-          res.json(id);
+          res.json(req.body.id);
         }
       });
     });

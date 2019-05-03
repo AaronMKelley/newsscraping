@@ -35,10 +35,15 @@
     <input type="text" name="comment" id="save"><button>sumbit</button></input>
   </form>
   <b>comments:</b>
-   <% for (var i in results)  {%>
-      <%= results[i].comments%><br>
+   <% for (var c in results[i].comments )  {%>
+      <%= results[i].comments[c] %>
+      <p><%= results[i]._id %> - <%= c %></p>
+      <button>Delete</button>
       <% }%>
+      ---------------------------------------------------------------
       <% }%>
+
+      <br></br><br></br>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.3.1.min.js"
