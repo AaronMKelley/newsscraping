@@ -37,8 +37,10 @@
   <b>comments:</b>
    <% for (var c in results[i].comments )  {%>
       <%= results[i].comments[c] %>
-      <p><%= results[i]._id %> - <%= c %></p>
+      <p><%= results[i]._id %> - <%= results[i].comments[c]._id %> - <%= results[i].comments[c].comment %></p>
+     <form action="/api/comment_delete/<%= results[i]._id %>/<%= results[i].comments[c]._id %>?_method=DELETE " method="POST">
       <button>Delete</button>
+    </form>
       <% }%>
       ---------------------------------------------------------------
       <% }%>

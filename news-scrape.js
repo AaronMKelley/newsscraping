@@ -2,7 +2,7 @@ var request = require('request');
 var cheerio = require('cheerio');
 var mongojs = require('mongojs');
 var express = require('express')
-
+var methodOverride = require('method-override')
 var axios = require("axios");
 
 // var express= require();
@@ -20,7 +20,7 @@ var db = mongojs(databaseUrl, collections);
 
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }))
-
+app.use(methodOverride('_method'))
 db.on("error", function (error) {
     console.log("Database Error:", error);
 });
@@ -39,7 +39,7 @@ app.get("/all", function (req, res) {
         }
         // If there are no errors, send the data to the browser as json
         else {
-       
+
             res.render('pages/news', {
                 results: results
             })
@@ -88,13 +88,13 @@ app.get("/pig", function (req, res) {
 });
 
 app.post('/api/comment/:id', function (req, res) {
-    
+
     db.info.update(
-        {_id:mongojs.ObjectID(req.params.id) },
-        { $push: { comments: req.body.comment}}
+        { _id: mongojs.ObjectID(req.params.id) },
+        { $push: { comments: { _id: mongojs.ObjectId(), comment: req.body.comment} } }
     )
-    
-    
+
+
     console.log(req.params.id)
     console.log(req.body.comment)
     res.redirect('/all')
@@ -104,17 +104,19 @@ app.post('/api/comment/:id', function (req, res) {
 
 })
 
-app.delete('api/comment/:id',function (req, res){
-    db.info.remove({
-        "_id": mongojs.ObjectID(req.body.id)
-      }, function(error, removed) {
-        if (error) {
-          res.send(error);
-        }else {
-          res.json(req.body.id);
-        }
-      });
-    });
+app.delete('/api/comment_delete/:id/:comment', function (req, res) {
+    db.infoç.update(
+        { '_id':mongojs.ObjectId(req.params.id) },
+        { $pull: { "comments": {_id: mongojs.ObjectId(req.params.comment) } } }, function (error, removed) {
+            if (error) {
+                res.send(error);
+            } else {
+                console.log(removed)
+                res.redirect('/all')
+            }
+
+        });
+});
 
 
 
