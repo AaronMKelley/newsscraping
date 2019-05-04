@@ -105,7 +105,7 @@ app.post('/api/comment/:id', function (req, res) {
 })
 
 app.delete('/api/comment_delete/:id/:comment', function (req, res) {
-    db.infoç.update(
+    db.info.update(
         { '_id':mongojs.ObjectId(req.params.id) },
         { $pull: { "comments": {_id: mongojs.ObjectId(req.params.comment) } } }, function (error, removed) {
             if (error) {
