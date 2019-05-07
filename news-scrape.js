@@ -4,6 +4,7 @@ var mongojs = require('mongojs');
 var express = require('express')
 var methodOverride = require('method-override')
 var axios = require("axios");
+var bodyParser = require('body-parser');
 
 // var express= require();
 // var rp = require('request-promise');
@@ -16,10 +17,11 @@ var PORT = process.env.PORT || 3000;
 var app = express();
 app.set('view engine', 'ejs');
 var db = mongojs(databaseUrl, collections);
+app.use(express.static('/public'));
 
-
-app.use(express.static("public"));
+// app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }))
+app.use(bodyParser.json());
 app.use(methodOverride('_method'))
 db.on("error", function (error) {
     console.log("Database Error:", error);
@@ -48,6 +50,8 @@ app.get("/all", function (req, res) {
 });
 
 var results = [];
+
+
 app.get("/pig", function (req, res) {
     // Make a request via axios for the news section of `ycombinator`
     axios.get("https://www.nytimes.com/section/us").then(function (response) {
@@ -64,15 +68,20 @@ app.get("/pig", function (req, res) {
             var headline = $(element).find("h2").text();
             var summary = $(element).find("p").text();
             var link = $(element).find("a").attr("href");
+            var pic =$(element).find('img').attr("src");
+            
 
 
-
+            
 
             results.push({
                 headline: headline,
                 summary: summary,
-                link: "www.nytimes.com" + link
+                link: "www.nytimes.com" + link,
+                pic:pic
+                
             })
+            console.log(results)
         })
 
         db.info.insert(results, function (err, result) {

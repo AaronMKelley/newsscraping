@@ -3,17 +3,24 @@
 
 <head>
 
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="materialize.css"  media="screen,projection"/>
 
+    
   <!--Let browser know website is optimized for mobile-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 
 <body>
-
+<div class="container">
+  <div class="row">
   <div id="news_table">
 
     <p>Hello World </p>
 
+    <button id="scrape">Scrape</button>
 
     <p> <% for (var i in results) {%></p>
     <b>
@@ -26,15 +33,17 @@
     </b> :<%= results[i].summary %> -
     <p></p>
     <b>
-      link
-    </b> :<%= results[i].link %>
+   
+    </b> <a href="<%= results[i].link %>">Link</a>
     <p></p>
     <b>id </b>
     </b> :<%= results[i]._id %><br><br>
+    <p></p>
+        <img src="<%= results[i].pic %>" alt="">  
     <form action='/api/comment/<%= results[i]._id %>' method=POST>
-      <input type="text" name="comment" id="save"><button>sumbit</button></input>
+      <input type="text" name="comment" id="save"><button>Sumbit</button></input>
     </form>
-    <b>comments:</b>
+    <b>Comments:</b>
     <% for (var c in results[i].comments )  {%>
     <div>
       <ul>
@@ -46,8 +55,10 @@
         </li>
       </ul>
     </div>
-
+  </div>
+</div>
     <% }%>
+    <p></p>
     ---------------------------------------------------------------
     <% }%>
 
@@ -57,7 +68,13 @@
   <script src="https://code.jquery.com/jquery-3.3.1.min.js"
     integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
   <script type="text/javascript" src="/js/news_select.js"></script>
+  <script type="text/javascript" src="/public/js/materialize.js"></script>
   <script type="text/javascript">
+  $(document)("on").on("click",function(){ 
+    getNews();
+  })
+  
+  </script>
 
 
 

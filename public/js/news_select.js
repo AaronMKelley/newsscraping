@@ -61,35 +61,49 @@
 
 function getNews(){
 	
-	$.ajax({
-		method: 'GET',
-		url: '/pig'
-	}).then(function(pig){
-		debugger;
-		for (var pIndex in pig){
-	console.log(pIndex)
-			var $p = $('<p>');
-			$p.text(`headline: ${pig[pIndex].headline} - summary: ${pig[pIndex].summary} - link: ${pig[pIndex].link}`);
-
-			
-
-			var input =$("<input>")
-			input.attr('type','text')
-
-
-			var bt = $('<button>')
-			bt.attr('class', 'save');
-						bt.text('Save');
-
-			input.append(bt)
-			// bt.attr('data-id', frogs[fIndex]._id)
-
-			$p.append(input)
-
-			$('#news_table').append($p);
-
-		}
-	})
+	app.get("/pig", function (req, res) {
+		// Make a request via axios for the news section of `ycombinator`
+		axios.get("https://www.nytimes.com/section/us").then(function (response) {
+			// Load the html body from axios into cheerio
+			var $ = cheerio.load(response.data);
+			//   console.log(response.data)
+			// For each element with a "title" class
+	
+	
+	
+			$("#stream-panel li").each(function (i, element) {
+				// Save the text and href of each link enclosed in the current element
+				//    console.log($(element).html())
+				var headline = $(element).find("h2").text();
+				var summary = $(element).find("p").text();
+				var link = $(element).find("a").attr("href");
+				var pic =$(element).find('img').attr("src");
+				
+	
+	
+				
+	
+				results.push({
+					headline: headline,
+					summary: summary,
+					link: "www.nytimes.com" + link,
+					pic:pic
+					
+				})
+				console.log(results)
+			})
+	
+			db.info.insert(results, function (err, result) {
+				// res.send('done');
+				res.render('pages/news', {
+					results: results
+				})
+			})
+			// res.json(results)
+			// console.log(results)
+		});
+	
+	});
 }
 // getNews();
 
